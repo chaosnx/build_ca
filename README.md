@@ -19,33 +19,33 @@ his will take you through the steps to make the Root CA for your sights
 
 it builds all files in a folder relitive to the your current path.
 
-'''sh
+```sh
 ./step1_new_ca.sh sitename
-'''
+```
 
 # 2. Create new server Keys
 
 this will create a server key and un-encript it so you dont need to type it when the server restarts.
 
-'''sh
+```sh
 ./step2_new_server_key.sh sitename
-'''
+```
 
 # 3. Create new keys for your clients
 
 this is where you create a key for your clients then make a cert to install in there devices. Thus to allow acess to the server.
 
-'''sh
+```sh
 ./step3_new_client.sh sitename username useremailaddr
-'''
+```
 
 # 4. Send keys via Email.
 
 this script crafts a email to send to the device. it took me a bit to figure this one out so that the email client can actualy show the link correctly.
 
-'''sh
+```sh
 ./step3_new_client.sh sitename username useremailaddr
-'''
+```
 
 # Configs
 
@@ -56,7 +56,7 @@ see the example openssl.cnf that is list. it's was based from [MIT's OpenSSL.cnf
 ## Nginx Config
 
 fill in the IP Address you use on the server's interface you plan on using.
-'''
+```
 http {
     server {
       
@@ -76,13 +76,13 @@ http {
         ssl_verify_client      on;
     }
 }
-'''
+```
 
 ## SMTPD
 
 This is the setup to send the mail through gmail.com smtp server so i dont get flaged as spam
 
-'''
+```
 #	$OpenBSD: smtpd.conf,v 1.7 2014/03/12 18:21:34 tedu Exp $
 
 # This is the smtpd server system-wide configuration file.
@@ -111,20 +111,20 @@ accept for local alias <aliases> deliver to mbox
 ## from the map "secrets"' file is used.
 ## This rule is for local users _only_ to send mail through gmail. No open relays!
 accept from local for any relay via secure+auth://label@smtp.gmail.com:587 auth <secrets>
-'''
+```
 
 add this line to your rc.conf.local
-'''sh
+```sh
 echo "smtpd_flags=\"\"" >> /etc/rc.conf.local
-'''
+```
 
 edit the /etc/mail/secrets file
-'''sh
+```sh
 # use this command to build the file
 # on FreeBSD /usr/local/libexec/opensmtpd/makemap secrets
 # on OpenBSD /usr/sbin/makemap secrets
 label username@gmail.com:password
-'''
+```
 
 
 
