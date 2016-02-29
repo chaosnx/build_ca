@@ -1,11 +1,11 @@
 # build_ca
 build scripts to create client side authentication
 
-This is a collection and complenation and improvement to what I have found on the internet and my basic setup on an OpenBSD Server.
+This is a collection and compilation to what I have found on the internet and my basic setup on an OpenBSD Server.
 
 I used Nginx because I cannot use OpenBSD's httpd engine due to the lack of support in client auth in the libTLS.
 
-this folows a 4 step path. 
+this follows a 4 step path. 
 1. Create the Root CA
 2. Create new server Keys (Self Sign if you dare)
 3. Create new keys for your clients
@@ -33,7 +33,7 @@ this will create a server key and un-encript it so you dont need to type it when
 
 # 3. Create new keys for your clients
 
-this is where you create a key for your clients then make a cert to install in there devices. Thus to allow acess to the server.
+this is where you create a key for your clients then make a cert to install in there devices. Thus to allow access to the server.
 
 ```sh
 ./step3_new_client.sh sitename username useremailaddr
@@ -41,7 +41,7 @@ this is where you create a key for your clients then make a cert to install in t
 
 # 4. Send keys via Email.
 
-this script crafts a email to send to the device. it took me a bit to figure this one out so that the email client can actualy show the link correctly.
+this script crafts a email to send to the device. it took me a bit to figure this one out so that the email client can actually show the link correctly.
 
 ```sh
 ./step3_new_client.sh sitename username useremailaddr
