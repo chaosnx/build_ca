@@ -6,6 +6,7 @@ This is a collection and compilation to what I have found on the internet and my
 I used Nginx because I cannot use OpenBSD's httpd engine due to the lack of support in client auth in the libTLS.
 
 this follows a 4 step path. 
+
 1. Create the Root CA
 2. Create new server Keys (Self Sign if you dare)
 3. Create new keys for your clients
@@ -13,7 +14,7 @@ this follows a 4 step path.
 
 First edit the scripts to put your information in.
 
-# 1. Create the Root CA
+## 1. Create the Root CA
 
 his will take you through the steps to make the Root CA for your sights
 
@@ -23,7 +24,7 @@ it builds all files in a folder relitive to the your current path.
 ./step1_new_ca.sh sitename
 ```
 
-# 2. Create new server Keys
+## 2. Create new server Keys
 
 this will create a server key and un-encript it so you dont need to type it when the server restarts.
 
@@ -31,7 +32,7 @@ this will create a server key and un-encript it so you dont need to type it when
 ./step2_new_server_key.sh sitename
 ```
 
-# 3. Create new keys for your clients
+## 3. Create new keys for your clients
 
 this is where you create a key for your clients then make a cert to install in there devices. Thus to allow access to the server.
 
@@ -39,7 +40,7 @@ this is where you create a key for your clients then make a cert to install in t
 ./step3_new_client.sh sitename username useremailaddr
 ```
 
-# 4. Send keys via Email.
+## 4. Send keys via Email.
 
 this script crafts a email to send to the device. it took me a bit to figure this one out so that the email client can actually show the link correctly.
 
@@ -47,13 +48,13 @@ this script crafts a email to send to the device. it took me a bit to figure thi
 ./step3_new_client.sh sitename username useremailaddr
 ```
 
-# Configs
+## Configs
 
-## OpenSSL config
+### OpenSSL config
 
 see the example openssl.cnf that is list. it's was based from [MIT's OpenSSL.cnf](http://web.mit.edu/crypto/openssl.cnf)
 
-## Nginx Config
+### Nginx Config
 
 fill in the IP Address you use on the server's interface you plan on using.
 ```
@@ -78,7 +79,7 @@ http {
 }
 ```
 
-## SMTPD
+### SMTPD
 
 This is the setup to send the mail through gmail.com smtp server so i dont get flaged as spam
 
@@ -131,7 +132,7 @@ label username@gmail.com:password
 
 ## Refrences:
 
-RYNOP's Blog [HOWTO: Client side certificate auth with Nginx NOVEMBER 26, 2012 BY RYNOP] (https://rynop.wordpress.com/2012/11/26/howto-client-side-certificate-auth-with-nginx/)
+RYNOP's Blog [HOWTO: Client side certificate auth with Nginx NOVEMBER 26, 2012 BY RYNOP](https://rynop.wordpress.com/2012/11/26/howto-client-side-certificate-auth-with-nginx/)
 
 Drumcoder's Blog [Client Side Certificates for Web Apps October 19, 2011](http://drumcoder.co.uk/blog/2011/oct/19/client-side-certificates-web-apps/)
 
