@@ -42,10 +42,10 @@ this is where you create a key for your clients then make a cert to install in t
 
 ## 4. Send keys via Email.
 
-this script crafts a email to send to the device. it took me a bit to figure this one out so that the email client can actually show the link correctly.
+This script crafts a email to send to the device. it took me a bit to figure this one out so that the email client can actually show the link correctly. So it can be clicked on. Who knew that email and attachmetns were such a pain to make without all those nice gui programs out there.
 
 ```sh
-./step3_new_client.sh sitename username useremailaddr
+./step4_send_key.sh sitename username
 ```
 
 ## Configs
@@ -79,7 +79,7 @@ http {
 }
 ```
 
-### SMTPD
+### smtpd
 
 This is the setup to send the mail through gmail.com smtp server so i dont get flaged as spam
 
