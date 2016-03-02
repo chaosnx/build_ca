@@ -45,7 +45,7 @@ cat $BODY | sed "s@Password@\"$PASSWD\"@g" | sed "s@URL@$SERVERADDR/$WEBFILE@g" 
 
 cat $WEBPATH$WEBFILE
 
-MESSAGE=(                                                                               
+(                                                                               
  echo "From: $MAILFROM"                                                         
  echo "To: $MAILTO"                                                             
  echo "Subject: $SUBJECT"                                                       
@@ -71,10 +71,4 @@ MESSAGE=(
  echo ""                                                                        
  uuencode $ATTACH $(basename $ATTACH)                                           
  echo "--$MAILPART--"                                                           
-) 
-
-echo $MESSAGE
-#echo $MESSAGE | /usr/sbin/sendmail $MAILTO
-
-
-#  openssl enc -base64 < file
+)  | /usr/sbin/sendmail $MAILTO
