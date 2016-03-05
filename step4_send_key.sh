@@ -71,4 +71,4 @@ cat $WEBPATH$WEBFILE
  echo ""                                                                        
  uuencode $ATTACH $(basename $ATTACH)                                           
  echo "--$MAILPART--"                                                           
-)  | /usr/sbin/sendmail $MAILTO
+) | /usr/sbin/sendmail $MAILTO
