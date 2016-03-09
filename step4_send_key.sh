@@ -30,6 +30,7 @@ USERS_DIR="${SSL_CERTS_DIR}/users/${USERNAME}"
 PASSWD=$(cat ${SSL_CERTS_DIR}/users/${USERNAME}/${USERNAME}.paswd)
 
 MAILTO=$(openssl x509 -in ${USERS_DIR}/${USERNAME}.crt -noout -subject | sed -e 's/^subject.*emailAddress=\([a-zA-Z0-9\.@\-\*]*\).*$/\1/')
+
 BODY="instructions.html"
 ATTACH="${USERS_DIR}/${USERNAME}.p12"
 MAILPART=$RANDOM ## Generates Unique ID
