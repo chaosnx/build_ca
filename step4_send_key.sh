@@ -27,6 +27,20 @@ SSL_PRIVATE_DIR="$SSL_DIR/${CA_NAME}/private"
 SSL_CERTS_DIR="$SSL_DIR/${CA_NAME}/certs"
 USERS_DIR="${SSL_CERTS_DIR}/users/${USERNAME}"
 
+if [ -e "$SSL_PRIVATE_DIR/ca.passwds" ]; then
+    if [ -z "$CA_PASSWORD" ]
+    then
+        for LINE in `openssl base64 -d -in $SSL_PRIVATE_DIR/ca.passwds | openssl rsautl -decrypt -inkey $SSL_PRIVATE_DIR/ca.key -passin env:CA_PASSWORD | grep -v ^#`; do
+            eval "export ${LINE}"
+        done
+    else
+        for LINE in `openssl base64 -d -in $SSL_PRIVATE_DIR/ca.passwds | openssl rsautl -decrypt -inkey $SSL_PRIVATE_DIR/ca.key | grep -v ^#`; do
+            eval "export ${LINE}"
+        done
+    fi
+    unset LINE
+fi
+
 PASSWD=$(cat ${SSL_CERTS_DIR}/users/${USERNAME}/${USERNAME}.paswd)
 
 MAILTO=$(openssl x509 -in ${USERS_DIR}/${USERNAME}.crt -noout -subject | sed -e 's/^subject.*emailAddress=\([a-zA-Z0-9\.@\-\*]*\).*$/\1/')

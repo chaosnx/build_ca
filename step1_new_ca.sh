@@ -36,6 +36,7 @@ if [ -z "$CA_PASSWORD" ]; then
     export CA_PASSWORD=$CA_PASSWORD
     stty echo
 fi
+
 SSL_DIR="`pwd`/etc/ssl"
 SSL_PRIVATE_DIR="$SSL_DIR/${CA_NAME}/private"
 SSL_CERTS_DIR="$SSL_DIR/${CA_NAME}/certs"
@@ -48,6 +49,8 @@ mkdir -p ${SSL_CERTS_DIR}
 touch $SSL_DIR/${CA_NAME}/index.txt
 touch $SSL_DIR/${CA_NAME}/crlnumber
 
+touch $SSL_PRIVATE_DIR/ca.passwds
+
 # You need to create the file crlnumber manually if you get an error: No such file. Modern OpenSSL versions require this.
 echo 01 > $SSL_DIR/${CA_NAME}/crlnumber
 
@@ -57,14 +60,23 @@ sed "s@PATH@$SSL_DIR/${CA_NAME}@g" ./openssl.cnf > $SSL_DIR/${CA_NAME}/openssl.c
 openssl genrsa -out $SSL_PRIVATE_DIR/ca.key -passout env:CA_PASSWORD -des3 4096 
 # openssl genrsa -out $SSL_PRIVATE_DIR/ca.key 4096
 
-openssl rsa -passin env:CA_PASSWORD -pubout -in $SSL_PRIVATE_DIR/ca.key -out $SSL_PRIVATE_DIR/ca.pub
+openssl rsa -in $SSL_PRIVATE_DIR/ca.key -passin env:CA_PASSWORD -pubout  -out $SSL_PRIVATE_DIR/ca.pub
 
 #openssl req -config $SSL_DIR/${CA_NAME}/openssl.cnf -new -x509 -days 1095 -key $SSL_PRIVATE_DIR/ca.key -out $SSL_CERTS_DIR/ca.crt
 openssl req -passin env:CA_PASSWORD -config $SSL_DIR/${CA_NAME}/openssl.cnf -new -x509 -days 1095 -key $SSL_PRIVATE_DIR/ca.key -out $SSL_CERTS_DIR/ca.crt -subj "${SSL_SUBJ}" 
-
 
 # Create a Certificate Revocation list for removing 'user certificates.'
 #openssl ca -config $SSL_DIR/${CA_NAME}/openssl.cnf -name ${CA_NAME} -gencrl -keyfile $SSL_PRIVATE_DIR/ca.key -cert $SSL_CERTS_DIR/ca.crt -out $SSL_PRIVATE_DIR/ca.crl -crldays 1095
 openssl ca -passin env:CA_PASSWORD -config $SSL_DIR/${CA_NAME}/openssl.cnf -gencrl -keyfile $SSL_PRIVATE_DIR/ca.key -cert $SSL_CERTS_DIR/ca.crt -out $SSL_PRIVATE_DIR/ca.crl -crldays 1095
 
 set +xv # echo off
+
+    #openssl base64 -d -in $SSL_PRIVATE_DIR/ca.passwds | \
+    #    openssl rsautl -decrypt -inkey $SSL_PRIVATE_DIR/ca.key -passin env:CA_PASSWORD | \
+    #    awk "{print \$1\"\nServer_PASSWORD=$Server_PASSWORD\"}" | \
+    #    openssl rsautl -encrypt -inkey $SSL_PRIVATE_DIR/ca.key -passin env:CA_PASSWORD | \
+    #    openssl base64 -out $SSL_PRIVATE_DIR/ca2.passwds && mv $SSL_PRIVATE_DIR/ca2.passwds $SSL_PRIVATE_DIR/ca.passwds
+
+echo CA_PASSWORD=$CA_PASSWORD | \
+    openssl rsautl -encrypt -inkey $SSL_PRIVATE_DIR/ca.key -passin env:CA_PASSWORD | \
+    openssl base64 -out $SSL_PRIVATE_DIR/ca2.passwds && mv $SSL_PRIVATE_DIR/ca2.passwds $SSL_PRIVATE_DIR/ca.passwds

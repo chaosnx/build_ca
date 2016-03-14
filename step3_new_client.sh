@@ -19,6 +19,32 @@ USERNAME="$2"
 USERMAIL="$3"
 SSL_SUBJ=/C=US/ST=Michigan/L=Grand Rapids/O=CompanyName/OU=CompanyUnit/CN=subdomain.domain.com
 
+SSL_DIR="`pwd`/etc/ssl"
+SSL_PRIVATE_DIR="$SSL_DIR/${CA_NAME}/private"
+SSL_CERTS_DIR="$SSL_DIR/${CA_NAME}/certs"
+USERS_DIR="${SSL_CERTS_DIR}/users/${USERNAME}"
+
+if [ -d "$USERS_DIR" ]; then
+    # Control will enter here if $DIRECTORY exists.
+    #rm -rf $USERS_DIR
+fi
+
+mkdir -p ${USERS_DIR}
+
+if [ -e "$SSL_PRIVATE_DIR/ca.passwds" ]; then
+    if [ -z "$CA_PASSWORD" ]
+    then
+        for LINE in `openssl base64 -d -in $SSL_PRIVATE_DIR/ca.passwds | openssl rsautl -decrypt -inkey $SSL_PRIVATE_DIR/ca.key -passin env:CA_PASSWORD | grep -v ^#`; do
+            eval "export ${LINE}"
+        done
+    else
+        for LINE in `openssl base64 -d -in $SSL_PRIVATE_DIR/ca.passwds | openssl rsautl -decrypt -inkey $SSL_PRIVATE_DIR/ca.key | grep -v ^#`; do
+            eval "export ${LINE}"
+        done
+    fi
+    unset LINE
+fi
+
 if [ -z "$CA_PASSWORD" ]; then
     stty -echo
     while true; do
@@ -39,6 +65,12 @@ if [ -z "$CA_PASSWORD" ]; then
     stty echo
 fi
 
+if [ -e "${USERS_DIR}/${USERNAME}.key.passwd" ]; then
+    for LINE in `openssl base64 -d -in  ${USERS_DIR}/${USERNAME}.key.passwd | openssl rsautl -decrypt -inkey $SSL_PRIVATE_DIR/ca.key -passin env:CA_PASSWORD | grep -v ^#`; do
+        eval "export ${LINE}"
+    done
+    unset LINE
+fi
 
 if [ -z "$Client_PASSWORD" ]; then
     stty -echo
@@ -57,7 +89,17 @@ if [ -z "$Client_PASSWORD" ]; then
         fi
     done
     export Client_PASSWORD=$Client_PASSWORD
+    echo Client_PASSWORD=$Client_PASSWORD | \
+            openssl rsautl -encrypt -inkey $SSL_PRIVATE_DIR/ca.key -passin env:CA_PASSWORD | \
+            openssl base64 -out ${USERS_DIR}/${USERNAME}.key.passwd
     stty echo
+fi
+
+if [ -e "${USERS_DIR}/${USERNAME}.p12.passwd" ]; then
+    for LINE in `openssl base64 -d -in  ${USERS_DIR}/${USERNAME}.p12.passwd | openssl rsautl -decrypt -inkey $SSL_PRIVATE_DIR/ca.key -passin env:CA_PASSWORD | grep -v ^#`; do
+        eval "export ${LINE}"
+    done
+    unset LINE
 fi
 
 if [ -z "$ClientExport_PASSWORD" ]; then
@@ -77,20 +119,11 @@ if [ -z "$ClientExport_PASSWORD" ]; then
         fi
     done
     export ClientExport_PASSWORD=$ClientExport_PASSWORD
+    echo ClientExport_PASSWORD=$ClientExport_PASSWORD | \
+            openssl rsautl -encrypt -inkey $SSL_PRIVATE_DIR/ca.key -passin env:CA_PASSWORD | \
+            openssl base64 -out ${USERS_DIR}/${USERNAME}.p12.passwd
     stty echo
 fi
-
-SSL_DIR="`pwd`/etc/ssl"
-SSL_PRIVATE_DIR="$SSL_DIR/${CA_NAME}/private"
-SSL_CERTS_DIR="$SSL_DIR/${CA_NAME}/certs"
-USERS_DIR="${SSL_CERTS_DIR}/users/${USERNAME}"
-
-if [ -d "$USERS_DIR" ]; then
-    # Control will enter here if $DIRECTORY exists.
-    rm -rf $USERS_DIR
-fi
-
-mkdir -p ${USERS_DIR}
 
 echo $ClientExport_PASSWORD > ${USERS_DIR}/${USERNAME}.paswd
 
